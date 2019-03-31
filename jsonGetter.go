@@ -15,31 +15,40 @@ type Person struct {
 	Nicknames    []string
 	Achievements map[int]string
 }
+type Persons []Person
 type SayMyName interface {
 	SayName()
 }
 
-func(p Person) SayName()  {
-	fmt.Println("My name is ", p.Name)
+func (array Persons) SayName() {
+	for _,person:=range array{
+		fmt.Println("My name is ", person.Name)
+		rand.Seed(time.Now().Unix())
+		fmt.Println(person.Nicknames[rand.Int()%len(person.Nicknames)])
+	}
 }
 func main() {
-	Vasya := CreatePerson()
-	rand.Seed(time.Now().Unix())
-	fmt.Println(Vasya.Nicknames[rand.Int()%len(Vasya.Nicknames)])
-	Vasya.SayName()
+	people := CreatePerson()
+	people.SayName()
 }
 
-func CreatePerson() Person{
+func CreatePerson() Persons {
 	var text, err = ioutil.ReadFile("/home/ivan/Документы/homework.json")
 	if err != nil {
 		fmt.Println(err)
 	}
-	var man Person
-	err =json.Unmarshal(text, &man)
+	var persons = make([]Person,0)
+	var buff Person
+	var isBreak string
 
-	if err != nil {
-		log.Fatal(err)
+	for true {
+		err= json.Unmarshal(text, &buff)
+		if err != nil {
+			log.Fatal(err)
+		}
+		persons = append(persons, buff)
+		_=json.Unmarshal(text,&isBreak)
+		break//there is a incompleteness
 	}
-	return man
+	return persons
 }
-
